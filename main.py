@@ -15,6 +15,7 @@ from cryptography.hazmat.primitives.serialization import (
 
 class PolyCoinBlock:
     def __init__(self, previous_block_hash, source_code, signature):
+        self.type = "CODE"
         self.previous_block_hash = previous_block_hash
         self.source_code = source_code
         self.timestamp = datetime.datetime.now()
@@ -27,6 +28,7 @@ class PolyCoinBlock:
     def to_dict(self):
         """Convert the block's data into a dictionary."""
         return {
+            'type': self.type,
             'previous_block_hash': self.previous_block_hash,
             'source_code': self.source_code,
             'timestamp': str(self.timestamp),
@@ -56,6 +58,7 @@ class PolyCoinBlock:
 
 class PolyCoinBlockIdentifier:
     def __init__(self, previous_block_hash, name_organization, public_key_pem, certificate):
+        self.type = "IDENTIFIER"
         self.name_organization = name_organization
         self.public_key_pem = public_key_pem
         self.certificate = certificate
@@ -69,6 +72,7 @@ class PolyCoinBlockIdentifier:
     def to_dict(self):
         """Convert the block's data into a dictionary."""
         return {
+            'type': self.type,
             'previous_block_hash': self.previous_block_hash,
             'timestamp': str(self.timestamp),
             'block_hash': self.block_hash,
