@@ -2,6 +2,9 @@
 A simple Blockchain in Python
 """
 
+#TODO:
+# - Ajouter l'adresse du wallet ethereum dans le block identifier
+
 import hashlib
 from flask import Flask, jsonify, request
 import datetime
@@ -36,11 +39,10 @@ class PolyCoinBlock:
             'signature': self.signature
         }
 
-    def verify_block(self, public_key_pem: str) -> bool:
+    def verify_block(self, public_key: str) -> bool:
         code_encode = self.source_code.encode('utf-8')
-        loaded_public_key = load_pem_public_key(public_key_pem)
         try:
-            loaded_public_key.verify(
+            public_key.verify(
                 self.signature,
                 code_encode,
                 padding.PSS(
@@ -115,6 +117,15 @@ class Blockchain:
 app = Flask(__name__)
 blockchain = Blockchain()
 
+@app.route('/verify_block', methods=['GET'])
+def verify_block():
+    block_hash = request.args.get('block_hash')
+    organiztion_name = request.args.get('organization_name')
+    if not block_data:
+        return jsonify({'error': 'Missing block_data parameter'}), 400
+    elif not organization_name:
+        return jsonify({'error': 'Missing organization_name parameter'}), 400
+
 @app.route('/mine_block_code', methods=['GET'])
 def mine_block():
     source_code = request.args.get('source_code')
@@ -164,13 +175,20 @@ def mine_block_identifier():
             format=PublicFormat.SubjectPublicKeyInfo
         )
 
+        private_key_pem = private_key.private_bytes(
+            encoding=Encoding.PEM,
+            format=PrivateFormat.PKCS8,
+            encryption_algorithm=NoEncryption()
+        )
+
         blockchain.create_block_from_identifier(name_organization, public_key_pem, certificate)
 
         last_block = blockchain.last_block
         response = {
             'block_hash': last_block.block_hash,
             'previous_block_hash': last_block.previous_block_hash,
-            'timestamp': str(last_block.timestamp)
+            'timestamp': str(last_block.timestamp),
+            'private_key': private_key_pem.decode('utf-8').replace('\n', '')
         }
         return jsonify(response), 200
     
