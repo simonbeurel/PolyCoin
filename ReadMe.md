@@ -9,7 +9,7 @@ The PolyCoin project is the result of a 6-month research work carried out by Sim
 
 The goal of this project is to propose a blockchain allowing to permanently monitor the evolution of ethereum smart contracts published by different companies. Thanks to this project, it is also possible to find the different managers of a smart contract thanks to the cryptographic signature mechanism.
 
-If you need more details, you can find the state of the art carried out at the beginning of this project here: [State of the art](Etat_de_lart_DUMANOIS_BEUREL.pdf)
+If you need more details, you can find the state of the art carried out at the beginning of this project here: [State of the art](doc/Etat_de_lart_DUMANOIS_BEUREL.pdf)
 
 
 ## Blockchain's architecture 
