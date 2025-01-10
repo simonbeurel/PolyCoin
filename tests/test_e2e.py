@@ -66,12 +66,15 @@ def test_e2e_final(start_server):
     print('Block hash :', block_hash)
 
 
-    #Etape3: Vérifier la signature
+    #Etape3: Vérifier l'origine de la signature d'un block
     response = requests.get(f"{BASE_URL}/verify_block_signature", params={
         "block_hash": block_hash
     })
     assert response.status_code == 200
     print(response.json())
+    assert response.json()['name_org'] == "TestOrg2"
+
+
 
     '''
     try:
