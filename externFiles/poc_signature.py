@@ -23,6 +23,9 @@ public_key_pem = public_key.public_bytes(
     format=PublicFormat.SubjectPublicKeyInfo
 )
 
+print("Public key pem: ", public_key_pem)
+print("Private key pem: ", private_key_pem)
+
 code_original = "print('Hello world!')"
 code = code_original.encode('utf-8')
 
