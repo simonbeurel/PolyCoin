@@ -10,6 +10,7 @@ from cryptography.hazmat.primitives.serialization import (
 )
 
 import rsa
+import base64
 
 app = Flask(__name__)
 blockchain = Blockchain()
@@ -44,6 +45,34 @@ def mine_block_identifier():
 def get_chain():
     chain_data = [block.to_dict() for block in blockchain.chain]
     return jsonify({'chain': chain_data, 'length': len(chain_data)}), 200
+
+
+@app.route('/verify_block_signature', methods=['GET'])
+def verify_block_signature():
+    block_hash = request.args.get('block_hash')
+
+    source_code = ''
+    signature = ''
+
+    for block in blockchain.chain:
+        if block.type == "CODE" and block.block_hash == block_hash:
+            signature = block.signature
+            source_code = block.source_code
+    
+    signature_decoded = base64.b64decode(signature.encode('utf-8'))
+    code_source_decoded = source_code.encode('utf-8')
+
+    for name_org,pub_key in blockchain.dic_pub_key.items():
+        pub_key_restored = rsa.PublicKey.load_pkcs1(pub_key.encode('utf-8'))
+
+        try:
+            rsa.verify(code_source_decoded, signature_decoded, pub_key_restored)
+            print("La signature est valide.")
+            return jsonify({'name_org': name_org}), 200
+        except rsa.VerificationError:
+            print("La signature est invalide.")
+
+    return jsonify({'error': 'No organizations found'}), 400
 
 
 
