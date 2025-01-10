@@ -13,14 +13,14 @@ class Blockchain:
         previous_block_hash = self.last_block.block_hash
         self.chain.append(PolyCoinBlock(previous_block_hash, source_code, signature))
 
-    def create_block_from_identifier(self, name_organization, public_key_pem, certificate, walletETH):
+    def create_block_from_identifier(self, name_organization, public_key_str, certificate, walletETH):
         previous_block_hash = self.last_block.block_hash
         self.chain.append(
-            PolyCoinBlockIdentifier(previous_block_hash, name_organization, public_key_pem, certificate, walletETH))
+            PolyCoinBlockIdentifier(previous_block_hash, name_organization, public_key_str, certificate, walletETH))
 
-    def store_public_key(self, name_organization, public_key) -> bool:
+    def store_public_key(self, name_organization, public_key_str) -> bool:
         if name_organization not in self.dic_pub_key:
-            self.dic_pub_key[name_organization] = public_key
+            self.dic_pub_key[name_organization] = public_key_str
             return True
         return False
 

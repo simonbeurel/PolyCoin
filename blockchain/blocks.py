@@ -55,10 +55,10 @@ class PolyCoinBlock:
         return proof
 
 class PolyCoinBlockIdentifier:
-    def __init__(self, previous_block_hash, name_organization, public_key_pem, certificate, wallet_eth_address):
+    def __init__(self, previous_block_hash, name_organization, public_key_str, certificate, wallet_eth_address):
         self.type = "IDENTIFIER"
         self.name_organization = name_organization
-        self.public_key_pem = public_key_pem
+        self.public_key_str = public_key_str
         self.certificate = certificate
         self.walletETH = wallet_eth_address
         self.timestamp = datetime.datetime.now()
@@ -84,8 +84,8 @@ class PolyCoinBlockIdentifier:
             'timestamp': str(self.timestamp),
             'block_hash': self.block_hash,
             'name_organization': self.name_organization,
-            'public_key_pem': self.public_key_pem.decode('utf-8'),
-            'wallet_eth_address': self.walletETH,
+            'public_key_str': self.public_key_str,
+            'wallet_eth_address': self.walletETH
             "merkle_root": self.merkle_root,
             "transactions": self.transactions
         }
