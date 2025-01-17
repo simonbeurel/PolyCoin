@@ -6,7 +6,7 @@
 - LIQUORI Luigi (Researcher at the INRIA laboratory)
 
 ## Description
-The PolyCoin project is the result of a 6-month research work carried out by Simon BEUREL and Arnaud DUMANOIS on the subject presented by Liquori LUIGI (Lecturer-Researcher at INRIA): (Semi)Decentralized Digital Currencies and Mutable Smart Contracts for Permissioned Blockchains Distributed Ledgers for the European Area.
+The PolyCoin project is the result of a 6-month research work carried out by Simon BEUREL and Arnaud DUMANOIS on the subject presented by Liquori LUIGI (Researcher at INRIA): (Semi)Decentralized Digital Currencies and Mutable Smart Contracts for Permissioned Blockchains Distributed Ledgers for the European Area.
 
 The goal of this project is to propose a blockchain allowing to permanently monitor the evolution of ethereum smart contracts published by different companies. Thanks to this project, it is also possible to find the different managers of a smart contract thanks to the cryptographic signature mechanism.
 
