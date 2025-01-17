@@ -2,6 +2,7 @@ import socket
 import threading
 import sys
 import time
+import json
 
 # Fonction pour gérer les connexions entrantes
 def handle_client(conn, addr):
@@ -43,6 +44,21 @@ def connect_to_peer(peer_ip, peer_port):
     print(f"[+] Connecté au pair {peer_ip}:{peer_port}")
 
 
+def broadcast_new_block(block):
+    for peer in PEERS:
+        try:
+            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client.connect(peer)
+            message = json.dumps({
+                'type': 'NEW_BLOCK',
+                'block': "Ceci est un nouveau block"
+            })
+            client.send(message.encode())
+            client.close()
+        except Exception as e:
+            print(f"[!] Impossible de contacter {peer}: {e}")
+
+
 if __name__ == "__main__":
 
     # Vérification des arguments
@@ -64,6 +80,7 @@ if __name__ == "__main__":
         print("2. Connecter à un pair")
         print("3. Afficher la blockchain [-- NOT DONE YET --]")
         print("4. Afficher la liste des pairs connectés")
+        print("5. Test broadcast message HelloWorld")
         choix = input("Choix : ")
 
         if choix == '1':
@@ -78,5 +95,7 @@ if __name__ == "__main__":
             for peer in PEERS:
                 print("---------------------------")
                 print(f"IP: {peer[0]}:{peer[1]}")
+        elif choix == '5':
+            broadcast_new_block(None)
         else:
             print("[!] Choix invalide.")
