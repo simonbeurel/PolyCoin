@@ -6,14 +6,23 @@ import json
 
 # Fonction pour gérer les connexions entrantes
 def handle_client(conn, addr):
-    print(f"[NOUVELLE CONNEXION] {addr}")
-    while True:
-        data = conn.recv(1024)
-        if not data:
-            break
-        print(f"[{addr}] {data.decode()}")
-        conn.sendall(b"Message recu")
-    conn.close()
+    try:
+        data = conn.recv(1024).decode()
+        message = json.loads(data)
+
+        if message['type'] == 'ASK_PEERS_LIST':
+            response = {
+                'type': 'RECEIVED_PEERS_LIST',
+                'data': PEERS
+            }
+            conn.send(json.dumps(response).encode())
+            print("Peers list sended")
+        else:
+            print(message)
+    except Exception as e:
+        print(f"[!] Erreur avec {addr}: {e}")
+    finally:
+        conn.close()
 
 # Lancer le serveur
 def start_server():
@@ -25,23 +34,34 @@ def start_server():
         conn, addr = server.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr)).start()
 
-# Envoyer des messages aux pairs
-def send_message(peer, message):
-    try:
-        peer_ip, peer_port = peer.split(":")
-        peer_port = int(peer_port)
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client.connect((peer_ip, peer_port))
-        client.sendall(message.encode())
-        response = client.recv(1024)
-        print(f"[RÉPONSE] {response.decode()}")
-        client.close()
-    except Exception as e:
-        print(f"[ERREUR] Impossible d'envoyer le message: {e}")
-
 def connect_to_peer(peer_ip, peer_port):
     PEERS.append((peer_ip, peer_port))
     print(f"[+] Connecté au pair {peer_ip}:{peer_port}")
+
+
+def refresh_list_peers():
+    for peer in PEERS:
+        try:
+            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client.connect(peer)
+            message = json.dumps({
+                'type': 'ASK_PEERS_LIST'
+            })
+            client.send(message.encode())
+        
+            response = client.recv(4096).decode()
+            response_data = json.loads(response)
+            
+            if response_data['type'] == 'RECEIVED_PEERS_LIST':
+                for p in response_data['data']:
+                    if tuple(p) not in PEERS:
+                        PEERS.append(tuple(p))
+                        print(f"[+] Nouveau pair ajouté : {p[0]}:{p[1]}")
+                        
+            client.close()
+        except Exception as e:
+            print(f"[!] Impossible de contacter {peer}: {e}")
+
 
 
 def broadcast_new_block(block):
@@ -81,6 +101,7 @@ if __name__ == "__main__":
         print("3. Afficher la blockchain [-- NOT DONE YET --]")
         print("4. Afficher la liste des pairs connectés")
         print("5. Test broadcast message HelloWorld")
+        print("6. Rafraichir la liste de PEERS")
         choix = input("Choix : ")
 
         if choix == '1':
@@ -97,5 +118,7 @@ if __name__ == "__main__":
                 print(f"IP: {peer[0]}:{peer[1]}")
         elif choix == '5':
             broadcast_new_block(None)
+        elif choix == '6':
+            refresh_list_peers()
         else:
             print("[!] Choix invalide.")
