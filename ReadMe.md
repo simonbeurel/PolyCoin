@@ -1,4 +1,5 @@
 # PolyCoin
+![Image 1](https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Polytechnicesophia.png/1200px-Polytechnicesophia.png   ) ![Image 2](https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Inr_logo_rouge.svg/2560px-Inr_logo_rouge.svg.png)
 ## Team members:
 - BEUREL Simon (5th year engineer student at Polytech Nice Sophia)
 - DUMANOIS Arnaud (5th year engineer student at Polytech Nice Sophia) 
@@ -46,11 +47,51 @@ To install the libraries:
 pip3 install -r requirements.txt
 ```
 
-To launch the project:
+To launch the project on the port 5000:
 ```shell
 python3 app.py
 ```
 
 To launch the different tests:
 ```
+pytest
+```
+
+## Flask's endpoints
+
+### 1. Mine Block with Source Code
+- **Route**: `/mine_block_code`
+- **Method**: GET
+- **Parameters**:
+  - `source_code`: Source code to store in the block
+  - `signature`: Signature of the source code
+- **Description**: Creates a new block in the blockchain containing the source code and its signature
+- **Returns**: The created block (200) or error if parameters are missing (400)
+
+### 2. Mine Block with Identifier
+- **Route**: `/mine_block_identifier`
+- **Method**: GET
+- **Parameters**:
+  - `name_organization`: Organization name
+  - `certificate`: Certificate
+  - `walletETH`: Ethereum wallet address
+  - `public_key_str`: Public key as string
+- **Description**: Creates a new identification block in the blockchain
+- **Returns**: The created block (200) or error if organization already exists or parameters are missing (400)
+
+### 3. Get Chain
+- **Route**: `/get_chain`
+- **Method**: GET
+- **Parameters**: None
+- **Description**: Retrieves the entire blockchain
+- **Returns**: The complete chain and its length (200)
+
+### 4. Verify Block Signature
+- **Route**: `/verify_block_signature`
+- **Method**: GET
+- **Parameters**:
+  - `block_hash`: Hash of the block to verify
+- **Description**: Verifies the signature of a CODE type block and identifies the corresponding organization
+- **Returns**: Organization name if signature is valid (200) or error if no organization found (400)
+
 
