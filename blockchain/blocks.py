@@ -85,7 +85,7 @@ class PolyCoinBlockIdentifier:
             'block_hash': self.block_hash,
             'name_organization': self.name_organization,
             'public_key_str': self.public_key_str,
-            'wallet_eth_address': self.walletETH
+            'wallet_eth_address': self.walletETH,
             "merkle_root": self.merkle_root,
             "transactions": self.transactions
         }
