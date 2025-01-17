@@ -1,5 +1,5 @@
 # PolyCoin
-![Image 1](/doc/img/logo_polytech_transparent.svg) ![Image 2](/doc/img/logo_inria.svg.png)
+![Image 1](/doc/img/polytech_logo.svg) ![Image 2](/doc/img/inria_logo.png)
 ## Team members:
 - BEUREL Simon (5th year engineer student at Polytech Nice Sophia)
 - DUMANOIS Arnaud (5th year engineer student at Polytech Nice Sophia) 
