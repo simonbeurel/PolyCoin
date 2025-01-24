@@ -18,7 +18,9 @@ def handle_client(conn, addr):
             conn.send(json.dumps(response).encode())
             print("Peers list sended")
         else:
-            print(message)
+            with open(f"logs/logs_{HOST}:{PORT}.txt", 'a') as f:
+                f.write(f"[{addr[0]}] {message['block']}\n")
+                print(message)
     except Exception as e:
         print(f"[!] Error with {addr}: {e}")
     finally:
