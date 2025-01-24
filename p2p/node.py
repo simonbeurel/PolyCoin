@@ -4,6 +4,8 @@ import sys
 import time
 import json
 
+from blockchain.blockchain import Blockchain
+
 # Fonction pour gérer les connexions entrantes
 def handle_client(conn, addr):
     try:
@@ -100,6 +102,8 @@ _| """ |_|"""""|_|"""""|_| """"|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|
     MUTED = '--muted' in sys.argv
     PEERS = []
 
+    blockchain = Blockchain()
+
     threading.Thread(target=start_server, daemon=True).start()
     time.sleep(2)
     
@@ -110,7 +114,7 @@ _| """ |_|"""""|_|"""""|_| """"|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|
 ├───────────────────────────────────────────┤
 │ 1. 🛠️  Mine a new block  (disabled)       │
 │ 2. 🔗  Connect to a new peer              │
-│ 3. 📜  Print the blockchain (disabled)    │
+│ 3. 📜  Print the blockchain               │
 │ 4. 🌐  Show the connected peers           │
 │ 5. 📡  Test broadcast message HelloWorld  │
 │ 6. 🔄  Refresh the peers's list           │
@@ -125,7 +129,9 @@ _| """ |_|"""""|_|"""""|_| """"|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|
             peer_port = int(input("Peer's port : "))
             connect_to_peer(peer_ip, peer_port)
         elif choix == '3':
-            print("[-- NOT DONE YET --]")
+            for block in blockchain.chain:
+                print("---------------------------")
+                print(block.to_dict())
         elif choix == '4':
             print("\n📡 Peers connected :")
             for peer in PEERS:

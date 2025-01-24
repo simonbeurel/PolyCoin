@@ -7,7 +7,7 @@ class Blockchain:
         self.dic_pub_key = {}
 
     def generate_genesis_block(self):
-        self.chain.append(PolyCoinBlock("0", "Genesis Block made by Simon Beurel", None))
+        self.chain.append(PolyCoinBlock("0", "Genesis Block", None))
 
     def create_block_from_source_code(self, source_code, signature):
         previous_block_hash = self.last_block.block_hash
