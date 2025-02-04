@@ -20,7 +20,7 @@ def handle_client(conn, addr):
             conn.send(json.dumps(response).encode())
             print("Peers list sended")
         else:
-            with open(f"logs/logs_{HOST}:{PORT}.txt", 'a') as f:
+            with open(f"p2p/logs/logs_{HOST}:{PORT}.txt", 'a') as f:
                 f.write(f"[{addr[0]}] {message['block']}\n")
                 print(message)
     except Exception as e:
@@ -68,14 +68,14 @@ def refresh_list_peers():
     for peer in to_add:
         PEERS.append(peer)
 
-def broadcast_new_block(block):
+def broadcast_last_block():
     for peer in PEERS:
         try:
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             client.connect(peer)
             message = json.dumps({
                 'type': 'NEW_BLOCK',
-                'block': "This is a new block"
+                'block': blockchain.last_block.to_dict()
             })
             client.send(message.encode())
             client.close()
@@ -97,6 +97,7 @@ def create_new_block_code():
         signature = input("Signature : ")
         blockchain.create_block_from_source_code(source_code, signature)
     print("\033[92m[+] Block created successfully\033[0m")
+    broadcast_last_block()
 
 if __name__ == "__main__":
 
@@ -132,7 +133,7 @@ _| """ |_|"""""|_|"""""|_| """"|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|
 │ 2. 🔗  Connect to a new peer              │
 │ 3. 📜  Print the blockchain               │
 │ 4. 🌐  Show the connected peers           │
-│ 5. 📡  Test broadcast message HelloWorld  │
+│ 5. 📡  Test broadcast last block mined    │
 │ 6. 🔄  Refresh the peers's list           │
 └───────────────────────────────────────────┘
         """)
@@ -154,7 +155,7 @@ _| """ |_|"""""|_|"""""|_| """"|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|
                 print("---------------------------")
                 print(f"IP: {peer[0]}:{peer[1]}")
         elif choix == '5':
-            broadcast_new_block(None)
+            broadcast_last_block()
         elif choix == '6':
             refresh_list_peers()
         else:
