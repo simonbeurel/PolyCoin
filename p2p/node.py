@@ -82,6 +82,22 @@ def broadcast_new_block(block):
         except Exception as e:
             print(f"[!] Impossible to contact {peer}: {e}")
 
+
+def create_new_block_code():
+    print("Which type of block do you want to create ?")
+    input_user = input("1. Identifier\n2. Code\n")
+    if input_user == '1':
+        name_organization = input("Name of the organization : ")
+        certificate = input("Certificate : ")
+        walletETH = input("Wallet ETH : ")
+        public_key_str = input("Public key : ")
+        blockchain.create_block_from_identifier(name_organization, public_key_str, certificate, walletETH)
+    elif input_user == '2':
+        source_code = input("Source code : ")
+        signature = input("Signature : ")
+        blockchain.create_block_from_source_code(source_code, signature)
+    print("\033[92m[+] Block created successfully\033[0m")
+
 if __name__ == "__main__":
 
     print(r'''
@@ -112,7 +128,7 @@ _| """ |_|"""""|_|"""""|_| """"|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|
 ┌───────────────────────────────────────────┐
 │                 MENU                      │
 ├───────────────────────────────────────────┤
-│ 1. 🛠️  Mine a new block  (disabled)       │
+│ 1. 🛠️  Mine a new block                   │
 │ 2. 🔗  Connect to a new peer              │
 │ 3. 📜  Print the blockchain               │
 │ 4. 🌐  Show the connected peers           │
@@ -123,7 +139,7 @@ _| """ |_|"""""|_|"""""|_| """"|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|
         choix = input("Choix : ")
 
         if choix == '1':
-            print("[-- NOT DONE YET --]")
+            create_new_block_code()
         elif choix == '2':
             peer_ip = input("Peer's IP address : ")
             peer_port = int(input("Peer's port : "))
