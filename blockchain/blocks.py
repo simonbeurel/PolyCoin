@@ -7,11 +7,16 @@ from .merkle_tree import MerkleTree
 
 
 class PolyCoinBlock:
-    def __init__(self, previous_block_hash, source_code, signature):
+    def __init__(self, previous_block_hash, source_code, signature, timestamp=None):
         self.type = "CODE"
         self.previous_block_hash = previous_block_hash
         self.source_code = source_code
-        self.timestamp = datetime.datetime.now()
+
+        if timestamp is None:
+            self.timestamp = datetime.datetime.now()
+        else:
+            self.timestamp = timestamp
+
         self.signature = signature
 
         # Create transactions list from block data
@@ -41,6 +46,14 @@ class PolyCoinBlock:
             'transactions': self.transactions
         }
 
+    def from_dict(data: dict):
+        return PolyCoinBlock(
+            data['previous_block_hash'],
+            data['source_code'],
+            data['signature'],
+            data['timestamp']
+        )
+
     def get_merkle_proof(self, tx: str) -> List[tuple[str, bool]]:
         """
         Generate a Merkle proof for a given transaction hash.
@@ -55,13 +68,17 @@ class PolyCoinBlock:
         return proof
 
 class PolyCoinBlockIdentifier:
-    def __init__(self, previous_block_hash, name_organization, public_key_str, certificate, wallet_eth_address):
+    def __init__(self, previous_block_hash, name_organization, public_key_str, certificate, wallet_eth_address, timestamp=None):
         self.type = "IDENTIFIER"
         self.name_organization = name_organization
         self.public_key_str = public_key_str
         self.certificate = certificate
         self.walletETH = wallet_eth_address
-        self.timestamp = datetime.datetime.now()
+
+        if timestamp is None:
+            self.timestamp = datetime.datetime.now()
+        else:
+            self.timestamp = timestamp
 
         self.transactions = [
             f"name:{name_organization}",
@@ -89,6 +106,15 @@ class PolyCoinBlockIdentifier:
             "merkle_root": self.merkle_root,
             "transactions": self.transactions
         }
+
+    def from_dict(data: dict):
+        return PolyCoinBlockIdentifier(
+            data['previous_block_hash'],
+            data['name_organization'],
+            data['public_key_str'],
+            data['certificate'],
+            data['wallet_eth_address']
+        )
 
     def get_merkle_proof(self, tx: str) -> List[tuple[str, bool]]:
         """

@@ -27,3 +27,9 @@ class Blockchain:
     @property
     def last_block(self):
         return self.chain[-1]
+
+    def to_dict(self):
+        return {
+            'chain': [block.to_dict() for block in self.chain],
+            'length': len(self.chain)
+        }
