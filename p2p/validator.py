@@ -44,20 +44,35 @@ class Validator:
         block_data['validator_address'] = f"{self.host}:{self.port}"
 
         if block_data['type'] == 'IDENTIFIER':
-            new_block_mined = self.blockchain.create_block_from_identifier(
+            self.blockchain.create_block_from_identifier(
                 block_data['name_organization'],
                 block_data['public_key_str'],
                 block_data['certificate'],
                 block_data['wallet_eth_address']
             )
         elif block_data['type'] == 'CODE':
-            new_block_mined = self.blockchain.create_block_from_source_code(
+            self.blockchain.create_block_from_source_code(
                 block_data['source_code'],
                 block_data['signature']
             )
 
         return True, block_data
 
+
+def broadcast_blockchain():
+    for peer in LIST_PEERS:
+        try:
+            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client.connect(peer)
+            message = json.dumps({
+                'type': 'BLOCKCHAIN_CHANGED',
+                'chain': [block.to_dict() for block in validator.blockchain.chain]
+            })
+            client.send(message.encode())
+            client.close()
+        except Exception as e:
+            print(f"\033[91m[!] Impossible to contact peer {peer}:{e}\033[0m")
+    print(f"\033[92m[+] Blockchain broadcast successfully\033[0m")
 
 def handle_client(conn, addr, validator):
     try:
@@ -75,6 +90,7 @@ def handle_client(conn, addr, validator):
                     'block': result
                 }
                 print(f"\033[92m[+] Block validated and signed\033[0m")
+                broadcast_blockchain()
             else:
                 response = {
                     'type': 'BLOCK_REJECTED',
@@ -94,6 +110,11 @@ def handle_client(conn, addr, validator):
                 'chain': [block.to_dict() for block in validator.blockchain.chain]
             }
             conn.send(json.dumps(response).encode())
+
+            ip_sender = message['ip_sender']
+            port_sender = message['port_sender']
+            LIST_PEERS.append((ip_sender, port_sender))
+
             print(f"\033[93m[*] Sent blockchain to {addr[0]}\033[0m")
 
     except Exception as e:
@@ -107,8 +128,6 @@ def start_server(validator):
     server.bind((validator.host, validator.port))
     server.listen()
     print(f"\033[93m[+] Validator started at {validator.host}:{validator.port}\033[0m")
-
-    print(validator.blockchain.to_dict())
 
     while True:
         conn, addr = server.accept()
@@ -134,6 +153,8 @@ _| """ |_|"""""|_|"""""|_| """"|_|"""""|_|"""""|_|"""""|_|"""""|
 
     HOST = sys.argv[1]
     PORT = int(sys.argv[2])
+
+    LIST_PEERS = []
 
     # Initialiser le validateur
     validator = Validator(HOST, PORT)

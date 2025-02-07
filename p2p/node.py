@@ -10,8 +10,9 @@ from blockchain.blocks import *
 
 # Fonction pour gérer les connexions entrantes
 def handle_client(conn, addr):
+    global blockchain
     try:
-        data = conn.recv(1024).decode()
+        data = conn.recv(4096).decode()
         message = json.loads(data)
 
         if message['type'] == 'ASK_PEERS_LIST':
@@ -21,6 +22,10 @@ def handle_client(conn, addr):
             }
             conn.send(json.dumps(response).encode())
             print("Peers list sent")
+        elif message['type'] == 'BLOCKCHAIN_CHANGED':
+            print(message)
+            blockchain = [PolyCoinBlock.from_dict(blocks) for blocks in message['chain']]
+            print("\033[92m[+] Blockchain just got updated!\033[0m")
         else:
             with open(f"p2p/logs/logs_{HOST}:{PORT}.txt", 'a') as f:
                 f.write(f"[{addr[0]}] {message['block']}\n")
@@ -54,7 +59,9 @@ def connect_to_validator(validator_ip, validator_port):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(VALIDATOR)
     message = json.dumps({
-        'type': 'REQUEST_BLOCKCHAIN'
+        'type': 'REQUEST_BLOCKCHAIN',
+        'ip_sender': HOST,
+        'port_sender': PORT
     })
     client.send(message.encode())
     response = client.recv(4096).decode()
@@ -173,7 +180,7 @@ def create_new_block_code():
             block_to_be_verified.validator_address = validated_block.get('validator_address')
 
             # Ajouter le bloc à la blockchain
-            blockchain.append(block_to_be_verified)
+            #blockchain.append(block_to_be_verified) //TODO: CHANGE LATER AND SEE THE BEHAVIOUR
             print("\033[92m[+] Block added to blockchain successfully\033[0m")
             broadcast_last_block()
         else:
