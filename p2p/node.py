@@ -23,13 +23,11 @@ def handle_client(conn, addr):
             conn.send(json.dumps(response).encode())
             print("Peers list sent")
         elif message['type'] == 'BLOCKCHAIN_CHANGED':
-            print(message)
             blockchain = [PolyCoinBlock.from_dict(blocks) for blocks in message['chain']]
             print("\033[92m[+] Blockchain just got updated!\033[0m")
         else:
             with open(f"p2p/logs/logs_{HOST}:{PORT}.txt", 'a') as f:
                 f.write(f"[{addr[0]}] {message['block']}\n")
-                print(message)
     except Exception as e:
         print(f"[!] Error with {addr}: {e}")
     finally:
@@ -67,7 +65,6 @@ def connect_to_validator(validator_ip, validator_port):
     response = client.recv(4096).decode()
     response_data = json.loads(response)
     if response_data['type'] == 'BLOCKCHAIN':
-        print(response_data)
         blockchain = [PolyCoinBlock.from_dict(blocks) for blocks in response_data['chain']]
         print("\033[92m[+] Blockchain synchronized with validator\033[0m")
 
