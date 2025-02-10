@@ -44,12 +44,6 @@ def start_server():
         conn, addr = server.accept()
         threading.Thread(target=handle_client, args=(conn, addr)).start()
 
-
-def connect_to_peer(peer_ip, peer_port):
-    PEERS.append((peer_ip, peer_port))
-    print(f"\033[92m[+] Connected to the peer {peer_ip}:{peer_port} successfully\033[0m")
-
-
 def connect_to_validator(validator_ip, validator_port):
     global VALIDATOR, blockchain
     VALIDATOR = (validator_ip, validator_port)
@@ -101,34 +95,6 @@ def get_block_validation(block_data):
     except Exception as e:
         print(f"\033[91m[!] Error during validation: {e}\033[0m")
         return False, None
-
-
-def refresh_list_peers():
-    to_add = []
-    for peer in PEERS:
-        try:
-            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client.connect(peer)
-            message = json.dumps({
-                'type': 'ASK_PEERS_LIST'
-            })
-            client.send(message.encode())
-            response = client.recv(4096).decode()
-            response_data = json.loads(response)
-
-            if response_data['type'] == 'RECEIVED_PEERS_LIST':
-                for p in response_data['data']:
-                    if tuple(p) not in PEERS:
-                        to_add.append(tuple(p))
-                        print(f"\033[92m[+] New peer added {p[0]}:{p[1]}\033[0m")
-
-            client.close()
-        except Exception as e:
-            print(f"[!] Impossible to contact {peer}: {e}")
-
-    for peer in to_add:
-        PEERS.append(peer)
-
 
 def broadcast_last_block():
     for peer in PEERS:
@@ -218,12 +184,9 @@ _| """ |_|"""""|_|"""""|_| """"|_|"""""|_|"""""|_|"""""|_|"""""|
 │                 MENU                      │
 ├───────────────────────────────────────────┤
 │ 1. 🛠️  Mine a new block                   │
-│ 2. 🔗  Connect to a new peer              │
-│ 3. 📜  Print the blockchain               │
-│ 4. 🌐  Show the connected peers           │
-│ 5. 📡  Test broadcast last block mined    │
-│ 6. 🔄  Refresh the peers's list           │
-│ 7. 🔐  Connect to a validator             │
+│ 2. 📜  Print the blockchain               │
+│ 3. 🌐  Show the network state             │
+│ 4. 🔐  Connect to a validator             │
 └───────────────────────────────────────────┘
         """)
         choix = input("Choice : ")
@@ -234,26 +197,27 @@ _| """ |_|"""""|_|"""""|_| """"|_|"""""|_|"""""|_|"""""|_|"""""|
                 continue
             create_new_block_code()
         elif choix == '2':
-            peer_ip = input("Peer's IP address : ")
-            peer_port = int(input("Peer's port : "))
-            connect_to_peer(peer_ip, peer_port)
-        elif choix == '3':
             if blockchain is None:
                 print("\033[91m[!] Node is not connected to the blockchain\033[0m")
                 continue
             for block in blockchain:
                 print("---------------------------")
                 print(block.to_dict())
+        elif choix == '3':
+            if VALIDATOR is None:
+                print("\033[91m[!] Node is not connected to the blockchain\033[0m")
+            else:
+                print(f"The node is connected to the validator at {VALIDATOR[0]}:{VALIDATOR[1]}")
+                print("Test reach the validator......")
+                client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                try:
+                    client.connect(VALIDATOR)
+                    print("\033[92m[+] Test reach validator successful\033[0m")
+                except (socket.timeout, socket.error):
+                    print("\033[91m[!] Test reach validator failed\033[0m")
+
+
         elif choix == '4':
-            print("\n📡 Peers connected :")
-            for peer in PEERS:
-                print("---------------------------")
-                print(f"IP: {peer[0]}:{peer[1]}")
-        elif choix == '5':
-            broadcast_last_block()
-        elif choix == '6':
-            refresh_list_peers()
-        elif choix == '7':
             validator_ip = input("Validator's IP address : ")
             validator_port = int(input("Validator's port : "))
             connect_to_validator(validator_ip, validator_port)
