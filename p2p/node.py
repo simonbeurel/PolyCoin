@@ -59,7 +59,13 @@ def connect_to_validator(validator_ip, validator_port):
     response = client.recv(4096).decode()
     response_data = json.loads(response)
     if response_data['type'] == 'BLOCKCHAIN':
-        blockchain = [PolyCoinBlock.from_dict(blocks) for blocks in response_data['chain']]
+        new_chain = []
+        for block in response_data['chain']:
+            if block['type'] == 'IDENTIFIER':
+                new_chain.append(PolyCoinBlockIdentifier.from_dict(block))
+            else:
+                new_chain.append(PolyCoinBlock.from_dict(block))
+        blockchain = new_chain
         print("\033[92m[+] Blockchain synchronized with validator\033[0m")
 
 

@@ -104,7 +104,8 @@ class PolyCoinBlockIdentifier:
             'public_key_str': self.public_key_str,
             'wallet_eth_address': self.walletETH,
             "merkle_root": self.merkle_root,
-            "transactions": self.transactions
+            "transactions": self.transactions,
+            "certificate": self.certificate
         }
 
     def from_dict(data: dict):
